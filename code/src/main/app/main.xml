@@ -40,7 +40,8 @@ WHERE LastModifiedDate > TO_DATE(#[flowVars['lastQueryDateB']], 'YYYY-MM-DD HH24
 ORDER BY LastModifiedDate ASC]]></db:parameterized-query>
 				</db:select>
 			</poll>
-            <logger message="Dynamics to Oracle sync started" level="INFO" doc:name="Dynamics to Oracle sync started"/>
+			<logger message="Dynamics to Oracle sync started" level="INFO"
+				doc:name="Dynamics to Oracle sync started" />
 			<data-mapper:transform doc:name="db to dynamics"
 				config-ref="db_to_dynamics" />
 		</batch:input>
@@ -70,9 +71,9 @@ payload.remove("dbid");
 						logicalName="account" doc:name="Microsoft Dynamics CRM Connector" />
 				</enricher>
 				<db:update config-ref="db-config" doc:name="update dynamics id on account">
-                    <db:parameterized-query><![CDATA[update Account
+					<db:parameterized-query><![CDATA[update Account
 set DynamicsId = #[recordVars['newDynamicsId']],
-LastModificationDate = sysdate
+LastModifiedDate = sysdate
 where Id = #[recordVars['dbid']]]]></db:parameterized-query>
 				</db:update>
 			</batch:step>
@@ -87,7 +88,8 @@ where Id = #[recordVars['dbid']]]]></db:parameterized-query>
 			</batch:step>
 		</batch:process-records>
 		<batch:on-complete>
-            <logger message="Oracle to Dynamics sync finished" level="INFO" doc:name="Oracle to Dynamics sync finished"/>
+			<logger message="Oracle to Dynamics sync finished" level="INFO"
+				doc:name="Oracle to Dynamics sync finished" />
 		</batch:on-complete>
 	</batch:job>
 
@@ -107,7 +109,8 @@ where Id = #[recordVars['dbid']]]]></db:parameterized-query>
 					doc:name="Microsoft Dynamics CRM Connector" />
 
 			</poll>
-            <logger message="Oracle to Dynamics sync started" level="INFO" doc:name="Oracle to Dynamics sync started"/>
+			<logger message="Oracle to Dynamics sync started" level="INFO"
+				doc:name="Oracle to Dynamics sync started" />
 			<data-mapper:transform config-ref="List_Map__To_List_Map_"
 				doc:name="dynamics to db" />
 		</batch:input>
@@ -133,7 +136,9 @@ where Id = #[recordVars['dbid']]]]></db:parameterized-query>
 		Phone,
 		Type,
 		DynamicsId,
-		LastModifiedById
+		LastModifiedById,
+		LastModifiedDate
+		
 	) VALUES (
 		#[payload['AccountNumber']],
 		#[payload['Description']],
@@ -141,7 +146,8 @@ where Id = #[recordVars['dbid']]]]></db:parameterized-query>
 		#[payload['Phone']],
 		#[payload['Type']],
 		#[payload['Id']],
-		USER
+		USER,
+		sysdate
 	)]]></db:parameterized-query>
 					</db:insert>
 				</batch:commit>
@@ -151,21 +157,20 @@ where Id = #[recordVars['dbid']]]]></db:parameterized-query>
 				<batch:commit doc:name="Batch Commit" size="200">
 					<db:update config-ref="db-config" bulkMode="true"
 						doc:name="update account">
-                        <db:parameterized-query><![CDATA[UPDATE Account SET
+						<db:parameterized-query><![CDATA[UPDATE Account SET
 	AccountNumber = #[payload['AccountNumber']],
 	Description = #[payload['Description']],  
 	Phone = #[payload['Phone']], 
 	Type = #[payload['Type']],
-	LastModificationDate = sysdate
+	LastModifiedDate = sysdate
 WHERE Name = #[payload['Name']]]]></db:parameterized-query>
 					</db:update>
 				</batch:commit>
 			</batch:step>
 		</batch:process-records>
 		<batch:on-complete>
-            <logger message="Dynamics to Oracle sync finished" level="INFO" doc:name="Dynamics to Oracle sync finished"/>
+			<logger message="Dynamics to Oracle sync finished" level="INFO"
+				doc:name="Dynamics to Oracle sync finished" />
 		</batch:on-complete>
 	</batch:job>
-
-
 </mule>

@@ -20,19 +20,19 @@ http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/ba
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
 
-    <context:property-placeholder location="credentials.properties"/>
+	<context:property-placeholder location="credentials.properties" />
 
 	<dynamicscrm:config name="dynamics-cnn-config"
 		username="${dynamics.username}" password="${dynamics.password}"
-		organizationServiceUrl="${dynamics.service.url}"
-		isOnlineConnection="true" doc:name="Microsoft Dynamics CRM Connector" authenticationRetries="5">
-        <dynamicscrm:connection-pooling-profile maxActive="10" initialisationPolicy="INITIALISE_ALL" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
-        <reconnect count="3" frequency="5000"/>
-    </dynamicscrm:config>
-	
+		organizationServiceUrl="${dynamics.service.url}" isOnlineConnection="true"
+		doc:name="Microsoft Dynamics CRM Connector" authenticationRetries="5">
+		<dynamicscrm:connection-pooling-profile
+			maxActive="10" initialisationPolicy="INITIALISE_ALL" exhaustedAction="WHEN_EXHAUSTED_GROW" />
+		<reconnect count="3" frequency="5000" />
+	</dynamicscrm:config>
+
 	<db:generic-config name="db-config"
-		url="jdbc:oracle:thin:${database.username}/${database.password}@${database.host}:${database.port}:${database.sid}" 
-		driverClassName="oracle.jdbc.OracleDriver"
-		doc:name="Db Config"
+		url="jdbc:oracle:thin:${database.username}/${database.password}@${database.host}:${database.port}:${database.sid}"
+		driverClassName="oracle.jdbc.OracleDriver" doc:name="Db Config"
 		doc:description="Include jar for your database and supply correct url pointing to your database eg" />
 </mule>
