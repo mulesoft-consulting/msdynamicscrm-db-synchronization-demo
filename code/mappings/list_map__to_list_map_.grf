@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><Graph __version="3.5.0" author="emmanuelteodoro" created="Fri Aug 29 11:53:30 ART 2014" description="List&lt;Map&gt; To List&lt;Map&gt;" guiVersion="3.4.4.P" id="1409325212536" licenseCode="Unlicensed" licenseType="Unknown" modified="Fri Aug 29 11:53:30 ART 2014" modifiedBy="emmanuelteodoro" name="List_Map__To_List_Map_" revision="1.0" showComponentDetails="false">
+<Global>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/Map" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _type="Input" id="2df7fcaa-3d10-4af5-8d45-b0f94c2024db">
+<Record fieldDelimiter="," name="Map" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __implementationClass="java.lang.String" __index="8" __sourcePath="{}/Map/accountid" containerType="SINGLE" label="accountid" name="accountid" type="string"/>
+<Field __implementationClass="java.lang.String" __index="1" __sourcePath="{}/Map/accountnumber" containerType="SINGLE" label="accountnumber" name="accountnumber" type="string"/>
+<Field __implementationClass="java.lang.String" __index="10" __sourcePath="{}/Map/createdby" containerType="SINGLE" label="createdby" name="createdby" type="string"/>
+<Field __implementationClass="java.lang.String" __index="0" __sourcePath="{}/Map/createdbyyominame" containerType="SINGLE" label="createdbyyominame" name="createdbyyominame" type="string"/>
+<Field __dmType="Calendar" __implementationClass="java.util.Calendar" __index="6" __sourcePath="{}/Map/createdon" containerType="SINGLE" label="createdon" name="createdon" type="string"/>
+<Field __implementationClass="java.lang.String" __index="7" __sourcePath="{}/Map/emailaddress1" containerType="SINGLE" label="emailaddress1" name="emailaddress1" type="string"/>
+<Field __implementationClass="java.lang.String" __index="12" __sourcePath="{}/Map/modifiedby" containerType="SINGLE" label="modifiedby" name="modifiedby" type="string"/>
+<Field __implementationClass="java.lang.String" __index="3" __sourcePath="{}/Map/modifiedbyname" containerType="SINGLE" label="modifiedbyname" name="modifiedbyname" type="string"/>
+<Field __dmType="Calendar" __implementationClass="java.util.Calendar" __index="9" __sourcePath="{}/Map/modifiedon" containerType="SINGLE" label="modifiedon" name="modifiedon" type="string"/>
+<Field __implementationClass="java.lang.String" __index="11" __sourcePath="{}/Map/name" containerType="SINGLE" label="name" name="name" type="string"/>
+<Field __implementationClass="java.lang.String" __index="5" __sourcePath="{}/Map/telephone1" containerType="SINGLE" label="telephone1" name="telephone1" type="string"/>
+<Field __implementationClass="java.lang.String" __index="4" __sourcePath="{}/Map/telephone2" containerType="SINGLE" label="telephone2" name="telephone2" type="string"/>
+<Field __implementationClass="java.lang.String" __index="2" __sourcePath="{}/Map/telephone3" containerType="SINGLE" label="telephone3" name="telephone3" type="string"/>
+</Record>
+</Metadata>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/Map" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _type="Output" id="3715fd5c-9333-4fc3-9201-2e1653b34a44">
+<Record fieldDelimiter="," name="Map" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __implementationClass="java.lang.String" __index="4" __sourcePath="{}/Map/AccountNumber" containerType="SINGLE" label="AccountNumber" name="AccountNumber" type="string"/>
+<Field __implementationClass="java.lang.String" __index="1" __sourcePath="{}/Map/Description" containerType="SINGLE" label="Description" name="Description" type="string"/>
+<Field __implementationClass="java.lang.String" __index="3" __sourcePath="{}/Map/Id" containerType="SINGLE" label="Id" name="Id" type="string"/>
+<Field __implementationClass="java.lang.String" __index="5" __sourcePath="{}/Map/Name" containerType="SINGLE" label="Name" name="Name" type="string"/>
+<Field __implementationClass="java.lang.String" __index="2" __sourcePath="{}/Map/Phone" containerType="SINGLE" label="Phone" name="Phone" type="string"/>
+<Field __implementationClass="java.lang.String" __index="0" __sourcePath="{}/Map/Type" containerType="SINGLE" label="Type" name="Type" type="string"/>
+<Field __sourcePath="{}/Map/LastModificationDate" containerType="SINGLE" label="LastModificationDate" name="ModificationDate" type="date"/>
+<Field __sourcePath="{}/Map/CreationDate" containerType="SINGLE" label="CreationDate" name="CreationDate" type="date"/>
+</Record>
+</Metadata>
+<Dictionary>
+<Entry id="DictionaryEntry0" input="true" name="inputPayload" output="false" type="object"/>
+<Entry id="DictionaryEntry1" input="false" name="outputPayload" output="true" type="object"/>
+</Dictionary>
+</Global>
+<Phase number="0">
+<Node enabled="enabled" fileURL="dict:inputPayload" guiName="Map&lt;k,v&gt; READER" guiX="20" guiY="20" id="BEAN_READER0" type="BEAN_READER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context outPort="0" sequenceField="__id" xpath=".">
+  <Mapping cloverField="accountid" trim="true" xpath="accountid"/>
+  <Mapping cloverField="accountnumber" trim="true" xpath="accountnumber"/>
+  <Mapping cloverField="createdby" trim="true" xpath="createdby"/>
+  <Mapping cloverField="createdbyyominame" trim="true" xpath="createdbyyominame"/>
+  <Mapping cloverField="createdon" trim="true" xpath="createdon"/>
+  <Mapping cloverField="emailaddress1" trim="true" xpath="emailaddress1"/>
+  <Mapping cloverField="modifiedby" trim="true" xpath="modifiedby"/>
+  <Mapping cloverField="modifiedbyname" trim="true" xpath="modifiedbyname"/>
+  <Mapping cloverField="modifiedon" trim="true" xpath="modifiedon"/>
+  <Mapping cloverField="name" trim="true" xpath="name"/>
+  <Mapping cloverField="telephone1" trim="true" xpath="telephone1"/>
+  <Mapping cloverField="telephone2" trim="true" xpath="telephone2"/>
+  <Mapping cloverField="telephone3" trim="true" xpath="telephone3"/>
+</Context>
+]]></attr>
+<attr name="_data_format"><![CDATA[MAP]]></attr>
+<attr name="__metadata"><![CDATA[true]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Foreach 'Map' -&gt; 'Map'" guiX="460" guiY="20" id="FOREACH_MAP_MAP" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = input.__id;
+//END -> DO NOT REMOVE
+output.AccountNumber = input.accountnumber;
+output.Name = input.name;
+output.Phone = input.telephone1;
+output.Id = input.accountid;
+output.ModificationDate = calendar2date(input.modifiedon);
+output.CreationDate = calendar2date(input.createdon);]]></attr>
+</Node>
+<Node cacheInMemory="true" enabled="enabled" fileURL="dict:outputPayload" guiName="Map&lt;k,v&gt; WRITER" guiX="900" guiY="20" id="MAP_WRITER0" type="MAP_WRITER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<clover:collection clover:name="Map" xmlns:clover="http://www.cloveretl.com/ns/xmlmapping">
+  <item clover:inPort="0">
+    <Type clover:dataType="java.lang.String">$0.Type</Type>
+    <Description clover:dataType="java.lang.String">$0.Description</Description>
+    <Phone clover:dataType="java.lang.String">$0.Phone</Phone>
+    <Id clover:dataType="java.lang.String">$0.Id</Id>
+    <AccountNumber clover:dataType="java.lang.String">$0.AccountNumber</AccountNumber>
+    <Name clover:dataType="java.lang.String">$0.Name</Name>
+    <LastModificationDate>$0.ModificationDate</LastModificationDate>
+    <CreationDate>$0.CreationDate</CreationDate>
+  </item>
+</clover:collection>]]></attr>
+<attr name="_data_format"><![CDATA[MAP]]></attr>
+<attr name="__metadata"><![CDATA[true]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="BEAN_READER0:0" guiBendpoints="" id="Edge0" inPort="Port 0 (in)" metadata="2df7fcaa-3d10-4af5-8d45-b0f94c2024db" outPort="Port 0 (out)" toNode="FOREACH_MAP_MAP:0"/>
+<Edge debugMode="true" fromNode="FOREACH_MAP_MAP:0" guiBendpoints="" id="Edge1" inPort="Port 0 (in)" metadata="3715fd5c-9333-4fc3-9201-2e1653b34a44" outPort="Port 0 (out)" toNode="MAP_WRITER0:0"/>
+</Phase>
+</Graph>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:dynamicscrm="http://www.mulesoft.org/schema/mule/dynamicscrm"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/dynamicscrm http://www.mulesoft.org/schema/mule/dynamicscrm/current/mule-dynamicscrm.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+	<data-mapper:config name="List_Map__To_List_Map_"
+		transformationGraphPath="list_map__to_list_map_.grf" doc:name="List_Map__To_List_Map_" />
+	<data-mapper:config name="db_to_dynamics"
+		transformationGraphPath="db_to_dynamics.grf" doc:name="db_to_dynamics" />
+
+
+	<batch:job name="db-to-dynamics-sync">
+		<batch:threading-profile poolExhaustedAction="WAIT" />
+		<batch:input>
+			<poll doc:name="Poll">
+				<fixed-frequency-scheduler frequency="${polling.frequency}"
+					startDelay="1000" />
+				<watermark variable="lastQueryDateB"
+					default-expression="${database.watermark.default.expression}"
+					selector="MAX"
+					selector-expression="#[groovy: new Date(payload['LastModifiedDate'].getTime()).format('yyyy-MM-dd HH:mm:ss')]" />
+				<db:select config-ref="db-config" doc:name="get accounts">
+					<db:parameterized-query><![CDATA[SELECT Id, AccountNumber, Name, Phone, SalesforceId, LastModifiedDate,LastModifiedById, DynamicsId
+FROM Account
+WHERE LastModifiedDate > TO_DATE(#[flowVars['lastQueryDateB']], 'YYYY-MM-DD HH24:MI:SS')
+ORDER BY LastModifiedDate ASC]]></db:parameterized-query>
+				</db:select>
+			</poll>
+            <logger message="Dynamics to Oracle sync started" level="INFO" doc:name="Dynamics to Oracle sync started"/>
+			<data-mapper:transform doc:name="db to dynamics"
+				config-ref="db_to_dynamics" />
+		</batch:input>
+		<batch:process-records>
+			<batch:step name="get-account-from-dynamics">
+				<enricher
+					source="#[!payload.hasNext() ? NullPayload.getInstance() : payload.next()]"
+					target="#[recordVars['accountInTargetInstance']]" doc:name="Message Enricher">
+					<dynamicscrm:retrieve-multiple-by-query
+						config-ref="dynamics-cnn-config" doc:name="Microsoft Dynamics CRM Connector"
+						query="dsql:SELECT accountid,accountnumber,modifiedon FROM account WHERE accountid = '#[payload[&quot;accountid&quot;] == null? &quot;00000000-0000-0000-0000-000000000000&quot; :payload[&quot;accountid&quot;] ]'">
+					</dynamicscrm:retrieve-multiple-by-query>
+				</enricher>
+				<expression-component doc:name="set ids"><![CDATA[recordVars['accountid'] = payload['accountid'] == null?  0: payload['accountid'];
+recordVars['dbid'] = payload['dbid'];
+
+payload.remove("accountid");
+payload.remove("dbid");
+
+]]></expression-component>
+			</batch:step>
+			<batch:step name="step-new-dynamics-account"
+				accept-expression="recordVars['accountInTargetInstance'] is NullPayload">
+				<enricher source="#[payload]" target="#[recordVars['newDynamicsId']]"
+					doc:name="Message Enricher">
+					<dynamicscrm:create config-ref="dynamics-cnn-config"
+						logicalName="account" doc:name="Microsoft Dynamics CRM Connector" />
+				</enricher>
+				<db:update config-ref="db-config" doc:name="update dynamics id on account">
+                    <db:parameterized-query><![CDATA[update Account
+set DynamicsId = #[recordVars['newDynamicsId']],
+LastModificationDate = sysdate
+where Id = #[recordVars['dbid']]]]></db:parameterized-query>
+				</db:update>
+			</batch:step>
+			<batch:step name="step-update-dynamics-account"
+				accept-expression="!(recordVars['accountInTargetInstance'] is NullPayload)  &amp;&amp; recordVars['accountInTargetInstance']['modifiedon'].toGregorianCalendar().before(payload['modifiedon'])">
+				<dynamicscrm:update config-ref="dynamics-cnn-config"
+					guid="#[recordVars['accountid']]" logicalName="account"
+					doc:name="Microsoft Dynamics CRM Connector">
+					<dynamicscrm:attributes-to-update
+						ref="#[payload]" />
+				</dynamicscrm:update>
+			</batch:step>
+		</batch:process-records>
+		<batch:on-complete>
+            <logger message="Oracle to Dynamics sync finished" level="INFO" doc:name="Oracle to Dynamics sync finished"/>
+		</batch:on-complete>
+	</batch:job>
+
+	<batch:job name="dynamics-to-db-sync">
+		<batch:threading-profile poolExhaustedAction="WAIT"
+			maxThreadsActive="1" />
+		<batch:input>
+			<poll doc:name="Poll">
+				<fixed-frequency-scheduler frequency="${polling.frequency}"
+					startDelay="1000" />
+				<watermark variable="lastQueryDateA"
+					default-expression="${dynamics.watermark.default.expression}"
+					selector="MAX" selector-expression="#[payload['LastModifiedDate']]" />
+				<dynamicscrm:retrieve-multiple-by-query
+					config-ref="dynamics-cnn-config"
+					query="dsql:SELECT accountid,accountnumber,createdby,createdbyyominame,createdon,emailaddress1,modifiedby,modifiedbyname,modifiedon,name,telephone1,telephone2,telephone3 FROM account  WHERE modifiedon &gt; '#[flowVars['lastQueryDateA']]'  ORDER BY accountid ASC"
+					doc:name="Microsoft Dynamics CRM Connector" />
+
+			</poll>
+            <logger message="Oracle to Dynamics sync started" level="INFO" doc:name="Oracle to Dynamics sync started"/>
+			<data-mapper:transform config-ref="List_Map__To_List_Map_"
+				doc:name="dynamics to db" />
+		</batch:input>
+		<batch:process-records>
+			<batch:step name="get-account-from-db">
+				<enricher
+					source="#[payload.isEmpty() ? NullPayload.getInstance() : payload[0]]"
+					target="#[recordVars['accountInTargetInstance']]" doc:name="Message Enricher">
+					<db:select config-ref="db-config" doc:name="get account">
+						<db:parameterized-query><![CDATA[SELECT Id,LastModifiedDate FROM Account WHERE Name = #[payload['Name']]]]></db:parameterized-query>
+					</db:select>
+				</enricher>
+			</batch:step>
+			<batch:step name="step-new-account"
+				accept-expression="recordVars['accountInTargetInstance'] is NullPayload">
+				<batch:commit size="200" doc:name="Batch Commit">
+					<db:insert config-ref="db-config" bulkMode="true"
+						doc:name="insert account">
+						<db:parameterized-query><![CDATA[INSERT INTO Account (
+		AccountNumber,
+		Description,
+		Name,
+		Phone,
+		Type,
+		DynamicsId,
+		LastModifiedById
+	) VALUES (
+		#[payload['AccountNumber']],
+		#[payload['Description']],
+		#[payload['Name']],
+		#[payload['Phone']],
+		#[payload['Type']],
+		#[payload['Id']],
+		USER
+	)]]></db:parameterized-query>
+					</db:insert>
+				</batch:commit>
+			</batch:step>
+			<batch:step name="step-update-account"
+				accept-expression="!(recordVars['accountInTargetInstance'] is NullPayload) &amp;&amp; (recordVars['accountInTargetInstance']['LastModifiedDate'].before(payload['LastModificationDate']))">
+				<batch:commit doc:name="Batch Commit" size="200">
+					<db:update config-ref="db-config" bulkMode="true"
+						doc:name="update account">
+                        <db:parameterized-query><![CDATA[UPDATE Account SET
+	AccountNumber = #[payload['AccountNumber']],
+	Description = #[payload['Description']],  
+	Phone = #[payload['Phone']], 
+	Type = #[payload['Type']],
+	LastModificationDate = sysdate
+WHERE Name = #[payload['Name']]]]></db:parameterized-query>
+					</db:update>
+				</batch:commit>
+			</batch:step>
+		</batch:process-records>
+		<batch:on-complete>
+            <logger message="Dynamics to Oracle sync finished" level="INFO" doc:name="Dynamics to Oracle sync finished"/>
+		</batch:on-complete>
+	</batch:job>
+
+
+</mule>

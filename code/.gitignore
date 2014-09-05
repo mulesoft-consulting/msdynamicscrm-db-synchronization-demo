@@ -1,0 +1,7 @@
+# Studio files
+
+.studio/*
+.mule/*
+.settings/*
+bin/*
+target/*
