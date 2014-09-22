@@ -13,7 +13,7 @@ MS Dynamics CRM On Demand <---> Database Account Sync
 		- You can use for generating testing data this: http://www.mockaroo.com/65708bf0 
 - Download the project from https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo
 - Open the project in Studio
-- Replace the credential for the created Database and Dynamics, it’s equivalent to Credential properties:
+- Replace the credential for the created Database and Dynamics, it’s equivalent to [Credential properties](https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo/blob/master/code/src/main/resources/credentials.properties):
 
 **# Oracle configuration**
 
