@@ -1,7 +1,10 @@
-MS Dynamics CRM On Demand <---> Database Account Sync
+Demo: MS Dynamics CRM On Demand to Dabatase Synchronization
 =======
 
-> This repository contains the code for MS Dynamics CRM On Demand to Database Account Bidirectional Synchronization.
+This repository contains the code for MS Dynamics CRM On Demand to Database Account Bidirectional Synchronization.
+
+## Summary
+This demo show how easy is to integrate mule with MS Dynamics CRM On Demand. This would be implemented throw the synchronization between the accounts from MS Dynamics CRM to DB and DB to MS Dynamics CRM. The synchronization will be done in batch operation started by polling. This means that periodically the processes will be trigger to synchronize the changes between endpoints.
 
 ## Demo environment configuration
 - The first thing is to create an account in the [MS Dynamics CRM On Demand Site](http://www.microsoft.com/en-us/dynamics/crm.aspx).
@@ -11,7 +14,7 @@ MS Dynamics CRM On Demand <---> Database Account Sync
 	- Once the Oracle is running, create the account table in the demo schema already created of the Oracle. (See the Account and Credentials table for connecting to the database). The account table script is located at the GitHub repository. The link is [schema.sql](https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo/blob/master/database/oracle/schema.sql).
 	- Change the date configuration for the oracle host to GMT-0 (UTC). 
 		- You can use for generating testing data this: http://www.mockaroo.com/65708bf0 
-- Download the project from https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo
+- Download the project
 - Open the project in Studio
 - Replace the credential for the created Database and Dynamics, it’s equivalent to [Credential properties](https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo/blob/master/code/src/main/resources/credentials.properties):
 
@@ -35,5 +38,24 @@ MS Dynamics CRM On Demand <---> Database Account Sync
 - Run Mule ESB
 - Use the next script to execute queries for the demo in Oracle database: [dynamics-db-test-script.sql](https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo/blob/master/database/oracle/dynamics-db-test-script.sql)
 
-## Connectors
-This demo version currently is using a beta version of the Dynamics CRM connector which is included here: https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo/tree/master/connectors
+## Scenarios
+Once you have the environment running these are the scenarios you can execute:
+
+Synchronize
+
+- New accounts from DB to Dynamics
+- Account changes from DB to Dynamics
+- New accounts from Dynamics to DB
+- Account changes from Dynamics to DB
+
+
+## Notes
+- Don't use this beta connector in maven projects, so far it doesn't work
+- The synchronization depends on timezone configuration. So, database, esb server and dynamics should have the same timezone.
+
+## Versions & Connectors
+This demo is meant to be run with the 3.5.1 runtime in ESB and uses available connectors that you need to have installed if you want to run it localy. 
+
+The connector list is:
+
+1. MS Dynamic connector  1.8.4 beta (Includes in /connectors)
