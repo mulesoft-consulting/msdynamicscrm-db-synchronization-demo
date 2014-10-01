@@ -7,8 +7,8 @@ This repository contains the code for MS Dynamics CRM On Demand to Database Acco
 This demo show how easy is to integrate mule with MS Dynamics CRM On Demand. This would be implemented throw the synchronization between the accounts from MS Dynamics CRM to DB and DB to MS Dynamics CRM. The synchronization will be done in batch operation started by polling. This means that periodically the processes will be trigger to synchronize the changes between endpoints.
 
 ## Demo environment configuration
-- The first thing is to create an account in the [MS Dynamics CRM On Demand Site](http://www.microsoft.com/en-us/dynamics/crm.aspx).
-	- Upon creation, you should have given an email address that looks something like {account}@{account}.onmicrosoft.com, save it. This will be the username to configure in the connector.
+- The first thing is to create a trial account in the [MS Dynamics CRM Free Trial](http://www.microsoft.com/en-us/dynamics/crm-free-trial-overview.aspx). Once account is created you can sign in **https://{dynamics_company_name}.crm2.dynamics.com** using the first option for Microsoft Online Services.
+	- Upon creation, you should have given an email address that looks something like {dynamics_username}@{dynamics_company_name}.onmicrosoft.com, save it. This will be the username to configure in the connector.
 	- Pending (configure timezone in CRM Dynamics GMT-0)
 - The second thing is to have an Oracle database to run the demo against. Once created, write down the IP Address of the VM.
 	- Once the Oracle is running, create the account table in the demo schema already created of the Oracle. (See the Account and Credentials table for connecting to the database). The account table script is located at the GitHub repository. The link is [schema.sql](https://github.com/mulesoft-consulting/msdynamicscrm-oracle-synchronization-demo/blob/master/database/oracle/schema.sql).
@@ -28,9 +28,9 @@ This demo show how easy is to integrate mule with MS Dynamics CRM On Demand. Thi
 
 **# Dynamics**
 
-	dynamics.username=<dynamics_username>@<dynamics_username>.onmicrosoft.com
+	dynamics.username=<dynamics_username>@<dynamics_company_name>.onmicrosoft.com
 	dynamics.password=<dynamics_password>
-	dynamics.service.url=https://<dynamics_username>.crm.dynamics.com/XRMServices/2011/Organization.svc
+	dynamics.service.url=https://<dynamics_company_name>.crm.dynamics.com/XRMServices/2011/Organization.svc
 
 - Build the deployable zip file from studio and deploy into Mule ESB 3.5.1
 - Open Dynamics in a browser and log in, go to Sales → Accounts and delete the existing accounts
